@@ -1,8 +1,6 @@
-from flask import Flask, render_template, url_for
 import requests
 from bs4 import BeautifulSoup as BS
-
-app = Flask(__name__,template_folder="templates")
+from wiki_scrape import scrape_url
 
 url='https://en.wikipedia.org/w/index.php?search=bushfires+2020&title=Special%3ASearch&go=Go&ns0=1'
 
@@ -10,7 +8,7 @@ combine='http://en.wikipedia.org'
 
 response=requests.get(url)
 
-soup=BS(response.content,features='html.parser')
+soup=BS(response.content,'lxml')
 
 # print(response.status_code)
 
@@ -43,27 +41,20 @@ for i in summary:
     x=str(i)
     new_=x.replace('<span class="searchmatch">', '').replace('</span>','').split('">')
     info=new_[1].replace('</div>','')
-    list_of_summaries.append(info)
-    # print(info)
+    print(info)
 
 
 # count=0
-for pos1, i in enumerate(date):
-    # print(i,' ASASASASAS')
-
-    list_=str(i).split(' - ')
-    list2=list_[1].split(',')
-    list3=list2[1].split('<')
-    list4=list3[0].split(' ')
-    month=list4[2]
-    date=list4[1]
-    year=list4[3]
-
-    full_date=month+' '+date+', '+year
-
-    list_of_dates.append(full_date)
-    # print(full_date)
-
+# for pos1, i in enumerate(date):
+#     # print(i,' ASASASASAS')
+#
+#     list_=str(i).split(' - ')
+#     list2=list_[1].split(',')
+#     list3=list2[1].split('<')
+#     list4=list3[0].split(' ')
+#     month=list4[2]
+#     date=list4[1]
+#     year=list4[3]
 #     #
 #     print(list_of_urls[count])
 #     print(month,date,year)
@@ -72,34 +63,3 @@ for pos1, i in enumerate(date):
 #     count+=1
 #     break
 
-
-
-
-
-posts = [
-    {
-        'author': 'Tommy Nguyen',
-        'title': list_of_titles[0],
-        'content': list_of_summaries[0],
-        'date_posted': list_of_dates[0],
-        'link': list_of_urls[0]
-    }
-]
-
-
-@app.route("/")
-@app.route("/home")
-def home():
-
-
-
-    return render_template('home.html', posts=posts)
-
-
-@app.route("/about")
-def about():
-    return render_template('about.html', title='About')
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
